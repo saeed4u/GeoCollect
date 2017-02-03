@@ -23,7 +23,7 @@ public class GeoTraceDB extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE IF NOT EXISTS " + GEOTRACE_TABLE + "(" + GEOTRACE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
-                + GEOTRACE_DATA + " TEXT NOT NULL," + GEOTRACE_COLOR + " INTEGER NOT NULL");
+                + GEOTRACE_DATA + " TEXT NOT NULL," + GEOTRACE_COLOR + " INTEGER NOT NULL);");
     }
 
     @Override

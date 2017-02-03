@@ -15,16 +15,6 @@
 
 package com.geoodk.collect.android.activities;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-
-import com.geoodk.collect.android.R;
-
-import com.geoodk.collect.android.application.Collect;
-import com.geoodk.collect.android.utilities.ColorPickerDialog;
-import com.geoodk.collect.android.utilities.FileUtils;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -50,6 +40,15 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+
+import com.geoodk.collect.android.R;
+import com.geoodk.collect.android.application.Collect;
+import com.geoodk.collect.android.utilities.ColorPickerDialog;
+import com.geoodk.collect.android.utilities.FileUtils;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 
 /**
  * Modified from the FingerPaint example found in The Android Open Source
@@ -225,6 +224,11 @@ public class DrawActivity extends Activity {
 								currentColor = color;
 								paint.setColor(color);
 								pointPaint.setColor(color);
+							}
+
+							@Override
+							public void canceled() {
+
 							}
 						}, "key", currentColor, currentColor,
 						getString(R.string.select_drawing_color));

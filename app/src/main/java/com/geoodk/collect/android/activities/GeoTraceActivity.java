@@ -35,6 +35,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,9 +45,12 @@ import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.geoodk.collect.android.R;
 import com.geoodk.collect.android.application.Collect;
+import com.geoodk.collect.android.database.GeoTraceQuery;
+import com.geoodk.collect.android.database.model.GeoTrace;
 import com.geoodk.collect.android.preferences.MapSettings;
 import com.geoodk.collect.android.spatial.MBTileProvider;
 import com.geoodk.collect.android.spatial.MapHelper;
@@ -123,6 +127,7 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
     private AlertDialog mAlertDialog;
 
     private ImageButton mChangeColorButton;
+    private View mDrawPolygon;
     private int mPolygonFillColor = Color.BLACK;
     private Polygon mPolygon;
 
@@ -206,6 +211,13 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
         mPolygon.setVisible(true);
 
         mChangeColorButton = (ImageButton) findViewById(R.id.change_colors);
+        mDrawPolygon = findViewById(R.id.draw_polygon);
+        mDrawPolygon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                drawPolygon();
+            }
+        });
         mChangeColorButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -220,6 +232,11 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
                                         mapView.invalidate();
                                     }
                                 }
+                            }
+
+                            @Override
+                            public void canceled() {
+                                //do nothing
                             }
                         }, "polygon_color", Color.BLACK, Color.BLACK, getString(R.string.fill_polygon_color));
                 cpd.show();
@@ -400,8 +417,91 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
             }
         });
 
-
         mapView.invalidate();
+        getSavedGeoTraces();
+    }
+
+
+    private void drawPolygon() {
+        if (map_markers.size() >= MINIMUM_LINES_OF_POLYGON) {
+            ArrayList<GeoPoint> geoPoints = new ArrayList<>();
+            for (Marker marker : map_markers) {
+                geoPoints.add(marker.getPosition());
+            }
+            mPolygon.setPoints(geoPoints);
+            mapView.getOverlays().add(mPolygon);
+            mapView.invalidate();
+        }
+    }
+
+    private void getSavedGeoTraces() {
+
+        Thread databaseQueryThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                GeoTraceQuery geoTraceQuery = new GeoTraceQuery(GeoTraceActivity.this);
+                ArrayList<GeoTrace> geoTraces = geoTraceQuery.getGeoTraces();
+                final ArrayList<Polygon> polygons = new ArrayList<>(geoTraces.size());
+                for (GeoTrace geoTrace : geoTraces) {
+
+                    for (GeoPoint geoPoint : geoTrace.getmGeoPoints()) {
+                        Marker marker = new Marker(mapView);
+                        marker.setPosition(geoPoint);
+                        marker.setIcon(getResources().getDrawable(R.drawable.map_marker));
+                        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
+                        marker.setDraggable(true);
+                        marker.setOnMarkerDragListener(draglistner);
+                        marker.setOnMarkerClickListener(nullmarkerlistner);
+                        mapView.getOverlays().add(marker);
+                        pathOverlay.addPoint(marker.getPosition());
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                mapView.invalidate();
+                            }
+                        });
+
+                    }
+
+                    Log.v("Geotrace", geoTrace.toString());
+                    final Polygon polygon = new Polygon(GeoTraceActivity.this);
+                    polygon.setPoints(geoTrace.getmGeoPoints());
+                    Log.v("Geotrace 1 Lat", "" + polygon.getPoints().get(0).getLatitude());
+                    polygon.setFillColor(geoTrace.getmColor());
+                    polygon.setVisible(true);
+                    polygons.add(polygon);
+                }
+                mHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+
+                        Log.v("Called", "Called");
+                        mapView.getOverlayManager().addAll(polygons);
+                        mapView.invalidate();
+                    }
+                });
+            }
+        });
+        databaseQueryThread.start();
+    }
+
+    private void saveGeoTracePolygon() {
+        final GeoTraceQuery geoTraceQuery = new GeoTraceQuery(this);
+        Thread insertThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (geoTraceQuery.addGeoTrace(final_return_string, mPolygonFillColor)) {
+                    geoTraceQuery.closeDB();
+                    mHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Toast.makeText(GeoTraceActivity.this, "Saved GeoTrace polygon", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+            }
+        });
+        insertThread.start();
     }
 
 	/*
@@ -724,26 +824,15 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
         marker.setOnMarkerClickListener(nullmarkerlistner);
         mapView.getOverlays().add(marker);
         pathOverlay.addPoint(marker.getPosition());
-
-        drawPolygon();
-
+        if (map_markers.size() >= MINIMUM_LINES_OF_POLYGON) {
+            mDrawPolygon.setVisibility(View.VISIBLE);
+        }
         mapView.invalidate();
     }
 
     private void saveGeoTrace() {
         returnLocation();
         finish();
-    }
-
-    private void drawPolygon() {
-        if (map_markers.size() >= MINIMUM_LINES_OF_POLYGON) {
-            ArrayList<GeoPoint> geoPoints = new ArrayList<>();
-            for (Marker marker : map_markers) {
-                geoPoints.add(marker.getPosition());
-            }
-            mPolygon.setPoints(geoPoints);
-            mapView.getOverlays().add(mPolygon);
-        }
     }
 
     private void showPolyonErrorDialog() {
@@ -777,7 +866,7 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
                 FormEntryActivity.GEOTRACE_RESULTS,
                 final_return_string);
         setResult(RESULT_OK, i);
-        finish();
+        saveGeoTracePolygon();
     }
 
     private OnMarkerClickListener nullmarkerlistner = new Marker.OnMarkerClickListener() {

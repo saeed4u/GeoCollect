@@ -10,7 +10,7 @@ import java.util.ArrayList;
  */
 public class GeoTrace {
 
-   private ArrayList<GeoPoint> mGeoPoints;
+    private ArrayList<GeoPoint> mGeoPoints;
     private int mColor;
 
     public GeoTrace(ArrayList<GeoPoint> mGeoPoints, int mColor) {
@@ -24,5 +24,14 @@ public class GeoTrace {
 
     public int getmColor() {
         return mColor;
+    }
+
+    @Override
+    public String toString() {
+        String rep = "";
+        for (GeoPoint geoPoint : mGeoPoints) {
+            rep += geoPoint.toString() + ",";
+        }
+        return rep + " color =" + mColor;
     }
 }
