@@ -232,6 +232,7 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
                                         mapView.invalidate();
                                     }
                                 }
+                                mPolygonFillColor = color;
                             }
 
                             @Override
@@ -486,22 +487,25 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
     }
 
     private void saveGeoTracePolygon() {
-        final GeoTraceQuery geoTraceQuery = new GeoTraceQuery(this);
-        Thread insertThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (geoTraceQuery.addGeoTrace(final_return_string, mPolygonFillColor)) {
-                    geoTraceQuery.closeDB();
-                    mHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Toast.makeText(GeoTraceActivity.this, "Saved GeoTrace polygon", Toast.LENGTH_SHORT).show();
-                        }
-                    });
+        if (!final_return_string.isEmpty()) {
+            final GeoTraceQuery geoTraceQuery = new GeoTraceQuery(this);
+            Thread insertThread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (geoTraceQuery.addGeoTrace(final_return_string, mPolygonFillColor)) {
+                        geoTraceQuery.closeDB();
+                        mHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(GeoTraceActivity.this, "Saved GeoTrace polygon", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
                 }
-            }
-        });
-        insertThread.start();
+            });
+            insertThread.start();
+        }
+
     }
 
 	/*
@@ -865,8 +869,8 @@ public class GeoTraceActivity extends Activity implements IRegisterReceiver {
         i.putExtra(
                 FormEntryActivity.GEOTRACE_RESULTS,
                 final_return_string);
-        setResult(RESULT_OK, i);
         saveGeoTracePolygon();
+        setResult(RESULT_OK, i);
     }
 
     private OnMarkerClickListener nullmarkerlistner = new Marker.OnMarkerClickListener() {
