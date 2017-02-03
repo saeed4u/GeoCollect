@@ -14,15 +14,6 @@
 
 package com.geoodk.collect.android.widgets;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.javarosa.core.model.data.IAnswerData;
-import org.javarosa.form.api.FormEntryPrompt;
-
-import com.geoodk.collect.android.application.Collect;
-import com.geoodk.collect.android.views.MediaLayout;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Typeface;
@@ -36,6 +27,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.geoodk.collect.android.application.Collect;
+import com.geoodk.collect.android.views.MediaLayout;
+
+import org.javarosa.core.model.data.IAnswerData;
+import org.javarosa.form.api.FormEntryPrompt;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class QuestionWidget extends LinearLayout {
 

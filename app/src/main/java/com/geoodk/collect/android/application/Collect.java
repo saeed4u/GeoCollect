@@ -15,27 +15,29 @@
 package com.geoodk.collect.android.application;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.multidex.MultiDex;
 import android.util.Log;
 
 import com.geoodk.collect.android.R;
-import org.opendatakit.httpclientandroidlib.client.CookieStore;
-import org.opendatakit.httpclientandroidlib.client.CredentialsProvider;
-import org.opendatakit.httpclientandroidlib.client.protocol.ClientContext;
-import org.opendatakit.httpclientandroidlib.impl.client.BasicCookieStore;
-import org.opendatakit.httpclientandroidlib.protocol.BasicHttpContext;
-import org.opendatakit.httpclientandroidlib.protocol.HttpContext;
-
 import com.geoodk.collect.android.database.ActivityLogger;
 import com.geoodk.collect.android.external.ExternalDataManager;
 import com.geoodk.collect.android.logic.FormController;
 import com.geoodk.collect.android.logic.PropertyManager;
 import com.geoodk.collect.android.preferences.PreferencesActivity;
 import com.geoodk.collect.android.utilities.AgingCredentialsProvider;
+
+import org.opendatakit.httpclientandroidlib.client.CookieStore;
+import org.opendatakit.httpclientandroidlib.client.CredentialsProvider;
+import org.opendatakit.httpclientandroidlib.client.protocol.ClientContext;
+import org.opendatakit.httpclientandroidlib.impl.client.BasicCookieStore;
+import org.opendatakit.httpclientandroidlib.protocol.BasicHttpContext;
+import org.opendatakit.httpclientandroidlib.protocol.HttpContext;
 
 import java.io.File;
 
@@ -116,6 +118,14 @@ public class Collect extends Application {
             e.printStackTrace();
         }
         return getString(R.string.app_name) + versionDetail;
+    }
+
+
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+
     }
 
     /**

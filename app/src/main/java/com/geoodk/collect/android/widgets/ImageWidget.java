@@ -14,18 +14,6 @@
 
 package com.geoodk.collect.android.widgets;
 
-import java.io.File;
-
-import org.javarosa.core.model.data.IAnswerData;
-import org.javarosa.core.model.data.StringData;
-import org.javarosa.form.api.FormEntryPrompt;
-import com.geoodk.collect.android.R;
-
-import com.geoodk.collect.android.activities.FormEntryActivity;
-import com.geoodk.collect.android.application.Collect;
-import com.geoodk.collect.android.utilities.FileUtils;
-import com.geoodk.collect.android.utilities.MediaUtils;
-
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.ContentValues;
@@ -46,6 +34,18 @@ import android.widget.LinearLayout;
 import android.widget.TableLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.geoodk.collect.android.R;
+import com.geoodk.collect.android.activities.FormEntryActivity;
+import com.geoodk.collect.android.application.Collect;
+import com.geoodk.collect.android.utilities.FileUtils;
+import com.geoodk.collect.android.utilities.MediaUtils;
+
+import org.javarosa.core.model.data.IAnswerData;
+import org.javarosa.core.model.data.StringData;
+import org.javarosa.form.api.FormEntryPrompt;
+
+import java.io.File;
 
 /**
  * Widget that allows user to take pictures, sounds or video and add them to the form.

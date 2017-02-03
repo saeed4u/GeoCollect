@@ -14,13 +14,13 @@
 
 package com.geoodk.collect.android.views;
 
-import com.geoodk.collect.android.R;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.widget.CheckBox;
 import android.widget.Checkable;
 import android.widget.RelativeLayout;
+
+import com.geoodk.collect.android.R;
 
 public class TwoItemMultipleChoiceView extends RelativeLayout implements Checkable {
 

@@ -380,5 +380,6 @@
     <string name="polyline_save">Save as Polyline</string>
     <string name="subtitle">Collect, Map &amp; Manage Data</string>
     <string name="geoodk_theme_default">Map Theme</string>
+    <string name="fill_polygon_color">Set Polygon Fill Color</string>
 
 </resources>
